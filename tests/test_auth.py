@@ -24,10 +24,10 @@ class AuthUserRegisterTestCases(unittest.TestCase):
         }
 
         ## Register User
-        response = self.client.request(method="get", url="/register", json=new_user)
+        response = self.client.request(method="post", url="/register", json=new_user)
         self.assertEqual(200, response.status_code)
         ## Register Same User Again
-        response = self.client.request(method="get", url="/register", json=new_user)
+        response = self.client.request(method="post", url="/register", json=new_user)
         self.assertEqual(400, response.status_code)
 
     def test_unregistered_user(self):
@@ -42,7 +42,7 @@ class AuthUserRegisterTestCases(unittest.TestCase):
             "is_authenticated": None,
         }
 
-        response = self.client.request(method="get", url="/register", json=new_user)
+        response = self.client.request(method="post", url="/register", json=new_user)
         self.assertEqual(200, response.status_code)
 
         actual_response = response.json()
@@ -61,11 +61,11 @@ class AuthUserRegisterTestCases(unittest.TestCase):
             "is_active": True
         }
 
-        response = self.client.request(method="get", url="/register", json=new_user)
+        response = self.client.request(method="post", url="/register", json=new_user)
         self.assertEqual(422, response.status_code)
 
         new_user.pop("email_id")
-        response = self.client.request(method="get", url="/register", json=new_user)
+        response = self.client.request(method="post", url="/register", json=new_user)
         self.assertEqual(422, response.status_code)
 
     def test_empty_or_no_password(self):
@@ -78,11 +78,11 @@ class AuthUserRegisterTestCases(unittest.TestCase):
             "is_active": True
         }
 
-        response = self.client.request(method="get", url="/register", json=new_user)
+        response = self.client.request(method="post", url="/register", json=new_user)
         self.assertEqual(422, response.status_code)
 
         new_user.pop("password")
-        response = self.client.request(method="get", url="/register", json=new_user)
+        response = self.client.request(method="post", url="/register", json=new_user)
         self.assertEqual(422, response.status_code)
 
 
@@ -95,7 +95,7 @@ class AuthTokenTestCases(unittest.TestCase):
             "email_id": "testemail2@gmail.com",
             "password": "password"
         }
-        response = self.client.request(method="get", url="/register", json=self.new_user)
+        response = self.client.request(method="post", url="/register", json=self.new_user)
         # self.assertEqual(200, response.status_code)
 
     def tearDown(self) -> None:

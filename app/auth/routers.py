@@ -31,7 +31,7 @@ async def get_token(response: Response, current_user: AuthUser):  # form_data: O
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@auth_router.get("/register", response_model=User)
+@auth_router.post("/register", response_model=User)
 async def register(new_user: UserDB):
 
     user = await DB_ENGINE.find_one(UserDB, UserDB.email_id == new_user.email_id)

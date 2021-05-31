@@ -17,7 +17,7 @@ class GenresTestCases(unittest.TestCase):
             "email_id": "testemail2@gmail.com",
             "password": "password"
         }
-        response = cls.client.request(method="get", url="/register", json=cls.new_user)
+        response = cls.client.request(method="post", url="/register", json=cls.new_user)
         cls.new_user.pop("username")
         response = cls.client.request(method="post", url="/auth/token", json=cls.new_user)
         cls.access_token = response.json().get("access_token")
