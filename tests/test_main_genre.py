@@ -42,6 +42,7 @@ class GenresTestCases(unittest.TestCase):
                 "Fantasy",
                 "Musical"
             ],
+            "count": 4,
             "size": 10,
             "page": 1
         }
@@ -60,6 +61,7 @@ class GenresTestCases(unittest.TestCase):
                 "Fantasy",
                 "Musical"
             ],
+            "count": 4,
             "size": 10,
             "page": 1
         }
@@ -92,7 +94,7 @@ class GenresTestCases(unittest.TestCase):
         response = response.json()
         self.assertIsInstance(response, dict)
         if len(response.get("data")) > 0:
-            self.assertIn(keyword, response.get("data")[0].get("name"))
+            self.assertIn(keyword, response.get("data")[0].get("name").lower())
 
     def test_edit_genre_by_id(self):
         list_of_added_genres = self.test_add_genres()

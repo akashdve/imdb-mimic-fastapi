@@ -59,6 +59,7 @@ class MoviesTestCases(unittest.TestCase):
                 "imdb_score": 8.3,
                 "name": "The Wizard of Oz"
             }],
+            "count": 1,
             "size": 10,
             "page": 1
         }
@@ -72,6 +73,7 @@ class MoviesTestCases(unittest.TestCase):
     def test_list_all_movies_pagination(self):
         expected_response = {
             "data": [],
+            "count": 0,
             "size": 10,
             "page": 1
         }
@@ -104,7 +106,7 @@ class MoviesTestCases(unittest.TestCase):
         response = response.json()
         self.assertIsInstance(response, dict)
         if len(response.get("data")) > 0:
-            self.assertIn(keyword, response.get("data")[0].get("name"))
+            self.assertIn(keyword, response.get("data")[0].get("name").lower())
 
     def test_edit_movie_by_id(self):
         list_of_added_movies = self.test_add_movies()

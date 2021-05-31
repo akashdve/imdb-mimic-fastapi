@@ -49,6 +49,7 @@ class DirectorsTestCases(unittest.TestCase):
                 "Alfred Hitchcock",
                 "Merian C. Cooper",
             ],
+            "count": 5,
             "size": 10,
             "page": 1
         }
@@ -68,6 +69,7 @@ class DirectorsTestCases(unittest.TestCase):
                 "Alfred Hitchcock",
                 "Merian C. Cooper",
             ],
+            "count": 5,
             "size": 10,
             "page": 1
         }
@@ -93,14 +95,14 @@ class DirectorsTestCases(unittest.TestCase):
         self.assertListEqual(list(expected_response.keys()), list(response.keys()))
 
     def test_list_all_directors_by_keyword(self):
-        keyword = "music"
+        keyword = "peter"
         response = self.client.request(method="get", url="/directors", params={"keyword": keyword})
 
         self.assertEqual(200, response.status_code)
         response = response.json()
         self.assertIsInstance(response, dict)
         if len(response.get("data")) > 0:
-            self.assertIn(keyword, response.get("data")[0].get("name"))
+            self.assertIn(keyword, response.get("data")[0].get("name").lower())
 
     def test_edit_director_by_id(self):
         list_of_added_directors = self.test_add_directors()
