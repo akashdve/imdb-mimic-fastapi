@@ -89,7 +89,10 @@ async def list_movies(request: Request):
 async def get_movie_by_id(movie_id):
     try:
         movie_obj = await DB_ENGINE.find_one(Movie, Movie.uid == movie_id)
-        return movie_obj
+        if movie_obj:
+            return movie_obj
+        else:
+            raise
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find movie with ID - {movie_id}")
 
@@ -123,6 +126,7 @@ async def update_movie(movie_id, updated_movie: Movie, current_user: User = Depe
     """
     try:
         movie_obj = await DB_ENGINE.find_one(Movie, Movie.uid == movie_id)
+        if movie_obj is None: raise
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find movie with Id {movie_id}")
     movie_obj.name=updated_movie.name
@@ -136,7 +140,7 @@ async def update_movie(movie_id, updated_movie: Movie, current_user: User = Depe
 
 
 @main_router.delete("/movies/{movie_id}", response_model=Movie)
-async def update_movie(movie_id, current_user: User = Depends(get_current_active_user)):
+async def delete_movie(movie_id, current_user: User = Depends(get_current_active_user)):
     """
     Delete movie object based on movie id
     :param movie_id: UUID
@@ -287,6 +291,7 @@ async def update_genre(genre_id, updated_genre: Genre, current_user: User = Depe
     """
     try:
         genre_obj = await DB_ENGINE.find_one(Genre, Genre.uid == genre_id)
+        if genre_obj is None: raise
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find genre with ID - {genre_id}")
     genre_obj.name = updated_genre.name
@@ -304,11 +309,12 @@ async def delete_genre(genre_id, current_user: User = Depends(get_current_active
     :return:
     """
     try:
-        movie_obj = await DB_ENGINE.find_one(Genre, Genre.uid == genre_id)
+        genre_obj = await DB_ENGINE.find_one(Genre, Genre.uid == genre_id)
+        if genre_obj is None: raise
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find genre with ID - {genre_id}")
-    await DB_ENGINE.delete(movie_obj)
-    return movie_obj
+    await DB_ENGINE.delete(genre_obj)
+    return genre_obj
 
 
 
@@ -370,7 +376,7 @@ async def add_directors(new_directors: List[Director], current_user: User = Depe
 
 
 @main_router.put("/directors/{director_id}")
-async def update_genre(director_id, updated_director: Director, current_user: User = Depends(get_current_active_user)):
+async def update_director(director_id, updated_director: Director, current_user: User = Depends(get_current_active_user)):
     """
     Update director object based on director id
     :param genre_id: UUID
@@ -380,8 +386,9 @@ async def update_genre(director_id, updated_director: Director, current_user: Us
     """
     try:
         director_obj = await DB_ENGINE.find_one(Director, Director.uid == director_id)
+        if director_obj is None: raise
     except:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find genre with ID - {director_id}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find director with ID - {director_id}")
     director_obj.name = updated_director.name
     director_obj.modified_at = datetime.utcnow()
     await DB_ENGINE.save(director_obj)
@@ -389,7 +396,7 @@ async def update_genre(director_id, updated_director: Director, current_user: Us
 
 
 @main_router.delete("/directors/{director_id}", response_model=Director)
-async def delete_genre(director_id, current_user: User = Depends(get_current_active_user)):
+async def delete_director(director_id, current_user: User = Depends(get_current_active_user)):
     """
     Delete director object based on director id
     :param director_id: UUID
@@ -398,7 +405,8 @@ async def delete_genre(director_id, current_user: User = Depends(get_current_act
     """
     try:
         director_obj = await DB_ENGINE.find_one(Director, Director.uid == director_id)
+        if director_obj is None: raise
     except:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find genre with ID - {director_id}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find director with ID - {director_id}")
     await DB_ENGINE.delete(director_obj)
     return director_obj

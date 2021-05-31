@@ -2,7 +2,7 @@ import os
 from datetime import timedelta, datetime
 from typing import Optional
 
-from fastapi import status
+from fastapi import status, Header
 from fastapi import Request, Response, Cookie
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -48,7 +48,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(request: Request, access_token: Optional[str] = Cookie(None)):
+async def get_current_user(request: Request, access_token: Optional[str] = Header(None)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

@@ -24,11 +24,8 @@ auth_router = APIRouter()
 
 
 @auth_router.get("/logout")
-async def logout(request: Request, current_user: User = Depends(get_current_active_user)):
-    # response = templates.TemplateResponse("login.html", {"request": request, "title": "Login", "current_user": AnonymousUser()})
-    response = Response()
-    response.delete_cookie("access_token", domain="localhost", path="/")
-    return response
+async def logout(current_user: User = Depends(get_current_active_user)):
+    return "ok"
 
 
 @auth_router.post("/auth/token", response_model=Token)
@@ -40,7 +37,7 @@ async def get_token(response: Response, current_user: AuthUser):  # form_data: O
     access_token = create_access_token(
         data={"sub": user.email_id}, expires_delta=access_token_expires
     )
-    response.set_cookie(key="access_token", value=access_token, httponly=True)
+    # response.set_cookie(key="access_token", value=access_token, httponly=True)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
