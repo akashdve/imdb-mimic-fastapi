@@ -40,16 +40,13 @@ async def index(current_user: AuthUser = Depends(get_current_active_user)):
 
 
 @main_router.get("/movies")
-async def list_movies(request: Request):
+async def list_movies(request: Request, keyword: str = "", size: int = 10, page: int =  1):
     """
     List all movies sorted based on popularity and filtered by keyword if given
     Also accepts "size" and "page" query params for pagination
     :param request:
     :return: list of movies
     """
-    keyword = request.query_params.get("keyword", "")
-    size = request.query_params.get("size", 10)
-    page = request.query_params.get("page", 1)
 
     try:
         size = int(size)
@@ -70,8 +67,12 @@ async def list_movies(request: Request):
                                       skip=(page-1)*size,
                                       limit=size)
 
+    count = await DB_ENGINE.count(Movie,
+                                  Movie.name.match(keyword))
+
     resp = {
         "data": movies,
+        "count": count,
         "size": size,
         "page": page
     }
@@ -150,20 +151,14 @@ async def delete_movie(movie_id, current_user: User = Depends(get_current_active
 
 
 @main_router.get("/search")
-async def search_movies(request: Request):
+async def search_movies(request: Request, keyword: str = "", genres: str ="", min_rating:float = 0.0,
+                        max_rating:float = 10.0, phrase_match:bool = False, size:int = 10, page:int = 1):
     """
     Advanced search for movies sorted based on popularity and filtered by keyword if given
     Also accepts "size" and "page" query params for pagination
     :param request:
     :return: list of movies
     """
-    keyword = request.query_params.get("keyword", "")
-    genres = request.query_params.get("genres", "")
-    min_rating = request.query_params.get("min_rating", 0.0)
-    max_rating = request.query_params.get("max_rating", 10.0)
-    phrase_match = request.query_params.get("phrase_match")
-    size = request.query_params.get("size", 10)
-    page = request.query_params.get("page", 1)
 
     try:
         size = int(size)
@@ -218,16 +213,13 @@ async def search_movies(request: Request):
 
 
 @main_router.get("/genres")
-async def list_genres(request: Request):
+async def list_genres(request: Request, keyword: str = "", size: int = 10, page: int =  1):
     """
     List all genres sorted chronologically and filtered by keyword if given
     Also accepts "size" and "page" query params for pagination
     :param request:
     :return: list of genres
     """
-    keyword = request.query_params.get("keyword", "")
-    size = request.query_params.get("size", 10)
-    page = request.query_params.get("page", 1)
 
     try:
         size = int(size)
@@ -248,8 +240,12 @@ async def list_genres(request: Request):
                                       skip=(page-1)*size,
                                       limit=size)
 
+    count = await DB_ENGINE.count(Genre,
+                                  Genre.name.match(keyword))
+
     resp = {
         "data": genres,
+        "count": count,
         "size": size,
         "page": page
     }
@@ -313,16 +309,13 @@ async def delete_genre(genre_id, current_user: User = Depends(get_current_active
 
 
 @main_router.get("/directors")
-async def list_directors(request: Request):
+async def list_directors(request: Request, keyword: str = "", size: int = 10, page: int =  1):
     """
     List all directors sorted chronologically and filtered by keyword if given
     Also accepts "size" and "page" query params for pagination
     :param request:
     :return: list of directors
     """
-    keyword = request.query_params.get("keyword", "")
-    size = request.query_params.get("size", 10)
-    page = request.query_params.get("page", 1)
 
     try:
         size = int(size)
@@ -343,8 +336,12 @@ async def list_directors(request: Request):
                                       skip=(page-1)*size,
                                       limit=size)
 
+    count = await DB_ENGINE.count(Director,
+                                  Director.name.match(keyword))
+
     resp = {
         "data": directors,
+        "count": count,
         "size": size,
         "page": page
     }
