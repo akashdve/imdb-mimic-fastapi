@@ -36,7 +36,7 @@ class DirectorsTestCases(unittest.TestCase):
             }
         ]
 
-        response = self.client.request(method="post", url="/directors", headers={"access_token": self.access_token}, json=new_directors)
+        response = self.client.request(method="post", url="/directors", headers={"access-token": self.access_token}, json=new_directors)
         self.assertEqual(200, response.status_code)
         return response.json()
 
@@ -106,7 +106,7 @@ class DirectorsTestCases(unittest.TestCase):
         list_of_added_directors = self.test_add_directors()
         uid = list_of_added_directors[0].get("uid")
 
-        response = self.client.request(method="put", url=f"/directors/{uid}", json={"name": "test edit First Name"})
+        response = self.client.request(method="put", url=f"/directors/{uid}", headers={"access-token": self.access_token}, json={"name": "test edit First Name"})
         self.assertEqual(200, response.status_code)
         response = response.json()
         self.assertEqual(uid, response)
@@ -115,7 +115,7 @@ class DirectorsTestCases(unittest.TestCase):
         list_of_added_directors = self.test_add_directors()
         for added_director in list_of_added_directors:
             uid = added_director.get("uid")
-            response = self.client.request(method="delete", url=f"/directors/{uid}")
+            response = self.client.request(method="delete", url=f"/directors/{uid}", headers={"access-token": self.access_token})
             self.assertEqual(200, response.status_code)
             response = response.json()
             self.assertEqual(uid, response.get("uid"))

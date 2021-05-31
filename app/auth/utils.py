@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 from typing import Optional
 
 from fastapi import status, Header
-from fastapi import Request, Response, Cookie
+from fastapi import Request
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError, ExpiredSignatureError
@@ -12,7 +12,6 @@ from passlib.context import CryptContext
 from app.db.query import get_user
 from app.models.token import TokenData
 from app.models.user import User, AnonymousUser, AuthUser
-# from app.exceptions.handlers import ExpiredSignatureError as CustomExpiredSignatureError
 from app.config import Config
 
 PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")

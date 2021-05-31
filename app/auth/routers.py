@@ -1,13 +1,8 @@
 from datetime import timedelta
-from typing import Optional, Union, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Request, Response, Cookie
 from fastapi import status
-from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
-from odmantic import AIOEngine
-from starlette.responses import RedirectResponse
 
 from app.auth.utils import authenticate_user, create_access_token, get_current_active_user, get_password_hash
 from app.config import Config
@@ -16,11 +11,6 @@ from app.models.user import User, AnonymousUser, UserDB, AuthUser
 from app.models.token import Token
 
 auth_router = APIRouter()
-
-
-# @auth_router.get("/login")
-# async def login(request: Request, current_user: User = Depends(get_current_active_user)):
-#     return "ok"
 
 
 @auth_router.get("/logout")
@@ -42,9 +32,7 @@ async def get_token(response: Response, current_user: AuthUser):  # form_data: O
 
 
 @auth_router.get("/register", response_model=User)
-async def register(new_user: UserDB, current_user: Union[User, AnonymousUser] = Depends(get_current_active_user)):
-    if not current_user.is_anonymous:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Account already exists!!")
+async def register(new_user: UserDB):
 
     user = await DB_ENGINE.find_one(UserDB, UserDB.email_id == new_user.email_id)
     if user is None:

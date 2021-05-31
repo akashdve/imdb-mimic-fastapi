@@ -40,7 +40,7 @@ class MoviesTestCases(unittest.TestCase):
             "imdb_score": 8.3,
             "name": "The Wizard of Oz"
         }]
-        response = self.client.request(method="post", url="/movies", headers={"access_token": self.access_token}, json=new_movies)
+        response = self.client.request(method="post", url="/movies", headers={"access-token": self.access_token}, json=new_movies)
         self.assertEqual(200, response.status_code)
         response = response.json()
         return response
@@ -121,7 +121,7 @@ class MoviesTestCases(unittest.TestCase):
             "imdb_score": 8.3,
             "name": "The Wizard of Oz"
         }
-        response = self.client.request(method="put", url=f"/movies/{movie_id}", headers={"access_token": self.access_token},
+        response = self.client.request(method="put", url=f"/movies/{movie_id}", headers={"access-token": self.access_token},
                                        json=updated_movie)
         self.assertEqual(200, response.status_code)
         response = response.json()
@@ -132,5 +132,5 @@ class MoviesTestCases(unittest.TestCase):
         for added_genre in list_of_added_movies:
             movie_id = added_genre.get("uid")
             response = self.client.request(method="delete", url=f"/movies/{movie_id}",
-                                           headers={"access_token": self.access_token})
+                                           headers={"access-token": self.access_token})
             self.assertEqual(200, response.status_code)

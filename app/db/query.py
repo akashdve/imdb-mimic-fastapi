@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import HTTPException
 
 from app.db import DB_ENGINE

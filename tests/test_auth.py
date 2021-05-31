@@ -8,10 +8,10 @@ from app import create_app, Config
 
 
 class AuthUserRegisterTestCases(unittest.TestCase):
-
-    def setUp(self) -> None:
-        self.test_config = Config(is_testing=True)
-        self.client = TestClient(create_app(self.test_config))
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.test_config = Config(is_testing=True)
+        cls.client = TestClient(create_app(cls.test_config))
 
     def test_registered_user(self):
         new_user = {
@@ -28,20 +28,6 @@ class AuthUserRegisterTestCases(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         ## Register Same User Again
         response = self.client.request(method="get", url="/register", json=new_user)
-        self.assertEqual(400, response.status_code)
-
-
-    def test_authenticated_user(self):
-        new_user = {
-            "username": "testuser",
-            "email_id": "testemail@gmail.com",
-            "password": "password",
-            "firstname": "first",
-            "lastname": "second",
-            "is_active": True
-        }
-
-        response = self.client.request(method="get", url="/register", json=new_user, headers={"auth_token": ""})
         self.assertEqual(400, response.status_code)
 
     def test_unregistered_user(self):
@@ -65,10 +51,10 @@ class AuthUserRegisterTestCases(unittest.TestCase):
         expected_response = new_user
         self.assertDictEqual(actual_response, expected_response)
 
-    def test_empty_or_no_username(self):
+    def test_empty_or_no_email(self):
         new_user = {
             "username": "",
-            "email_id": "testemail@gmail.com",
+            "email_id": "",
             "password": "password",
             "firstname": "first",
             "lastname": "second",
@@ -78,7 +64,24 @@ class AuthUserRegisterTestCases(unittest.TestCase):
         response = self.client.request(method="get", url="/register", json=new_user)
         self.assertEqual(422, response.status_code)
 
-        new_user.pop("username")
+        new_user.pop("email_id")
+        response = self.client.request(method="get", url="/register", json=new_user)
+        self.assertEqual(422, response.status_code)
+
+    def test_empty_or_no_password(self):
+        new_user = {
+            "username": "",
+            "email_id": "testuser1@gmail.com",
+            "password": "",
+            "firstname": "first",
+            "lastname": "second",
+            "is_active": True
+        }
+
+        response = self.client.request(method="get", url="/register", json=new_user)
+        self.assertEqual(422, response.status_code)
+
+        new_user.pop("password")
         response = self.client.request(method="get", url="/register", json=new_user)
         self.assertEqual(422, response.status_code)
 

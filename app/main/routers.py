@@ -3,22 +3,15 @@ import random
 import re
 import uuid
 from datetime import datetime
-from sqlite3 import IntegrityError
 from typing import List, Optional
 
 import pymongo
-from fastapi import Request, Form, UploadFile, File, Depends, HTTPException
+from fastapi import Request, Depends, HTTPException
 from fastapi import APIRouter
 from fastapi import status
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
-from motor.motor_asyncio import AsyncIOMotorClient
-
-from slugify import slugify
 
 from app.auth.utils import get_current_active_user
 from app.db import MONGO_CLIENT, DB_ENGINE
-# from app.exceptions.routers import error_page
 from app.models.user import User, AuthUser
 from app.models.movie import Movie, Director, Genre
 

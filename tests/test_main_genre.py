@@ -29,7 +29,7 @@ class GenresTestCases(unittest.TestCase):
         new_genres = [{
             "name": "New Genre 1"
         }]
-        response = self.client.request(method="post", url="/genres", headers={"access_token": self.access_token},
+        response = self.client.request(method="post", url="/genres", headers={"access-token": self.access_token},
                                        json=new_genres)
         self.assertEqual(200, response.status_code)
         return response.json()
@@ -100,7 +100,7 @@ class GenresTestCases(unittest.TestCase):
         updated_genre = {
             "name": "New Genre 1 Edited"
         }
-        response = self.client.request(method="put", url=f"/genres/{genre_id}", headers={"access_token": self.access_token},
+        response = self.client.request(method="put", url=f"/genres/{genre_id}", headers={"access-token": self.access_token},
                                        json=updated_genre)
         self.assertEqual(200, response.status_code)
         response = response.json()
@@ -110,5 +110,5 @@ class GenresTestCases(unittest.TestCase):
         list_of_added_genres = self.test_add_genres()
         for added_genre in list_of_added_genres:
             genre_id = added_genre.get("uid")
-            response = self.client.request(method="delete", url=f"/genres/{genre_id}")
+            response = self.client.request(method="delete", url=f"/genres/{genre_id}", headers={"access-token": self.access_token})
             self.assertEqual(200, response.status_code)
