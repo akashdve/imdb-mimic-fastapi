@@ -14,8 +14,8 @@ class UserDB(Model):
     firstname: Optional[str] = None
     lastname: Optional[str] = None
     is_active: bool = True
-    created_at: datetime = datetime.utcnow()
-    modified_at: datetime = datetime.utcnow()
+    created_at: Optional[datetime]
+    modified_at: Optional[datetime]
 
     @validator("email_id", "password")
     def never_empty(cls, s: str):

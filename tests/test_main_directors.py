@@ -1,4 +1,6 @@
 import unittest
+import uuid
+from datetime import datetime
 
 from fastapi.testclient import TestClient
 
@@ -7,30 +9,36 @@ from app.models.movie import Genre, Director
 
 
 class DirectorsTestCases(unittest.TestCase):
-    def setUp(self) -> None:
-        self.test_config = Config(is_testing=True)
-        self.client = TestClient(create_app(self.test_config))
-        self.new_user = {
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.test_config = Config(is_testing=True)
+        cls.client = TestClient(create_app(cls.test_config))
+        cls.new_user = {
             "username": "someuser",
             "email_id": "testemail2@gmail.com",
             "password": "password"
         }
-        # response = self.client.request(method="get", url="/register", json=self.new_user)
-        # self.assertEqual(200, response.status_code)
-        #
-        # self.new_user.pop("username")
-        # response = self.client.request(method="post", url="/auth/token", json=self.new_user)
-        # self.assertEqual(200, response.status_code)
-        # self.auth_token = json.loads(response.text).get("auth_token")
+        response = cls.client.request(method="get", url="/register", json=cls.new_user)
+        cls.new_user.pop("username")
+        response = cls.client.request(method="post", url="/auth/token", json=cls.new_user)
+        cls.access_token = response.json().get("access_token")
 
     def tearDown(self) -> None:
-        # response = self.client.request(method="delete", url="/register", json=self.new_user)
-        # self.assertEqual(200, response.status_code)
         pass
 
     def test_add_directors(self):
-        directors = [Director(name="Victor Fleming"), Director(name="George Lucas")]
-        raise
+        new_directors = [
+            {
+                "name":"test Victor Fleming 1",
+            },
+            {
+                "name":"test Victor Fleming 2",
+            }
+        ]
+
+        response = self.client.request(method="post", url="/directors", headers={"access_token": self.access_token}, json=new_directors)
+        self.assertEqual(200, response.status_code)
+        return response.json()
 
     def test_list_all_directors(self):
         expected_response = {
@@ -93,3 +101,21 @@ class DirectorsTestCases(unittest.TestCase):
         self.assertIsInstance(response, dict)
         if len(response.get("data")) > 0:
             self.assertIn(keyword, response.get("data")[0].get("name"))
+
+    def test_edit_director_by_id(self):
+        list_of_added_directors = self.test_add_directors()
+        uid = list_of_added_directors[0].get("uid")
+
+        response = self.client.request(method="put", url=f"/directors/{uid}", json={"name": "test edit First Name"})
+        self.assertEqual(200, response.status_code)
+        response = response.json()
+        self.assertEqual(uid, response)
+
+    def test_delete_director_by_id(self):
+        list_of_added_directors = self.test_add_directors()
+        for added_director in list_of_added_directors:
+            uid = added_director.get("uid")
+            response = self.client.request(method="delete", url=f"/directors/{uid}")
+            self.assertEqual(200, response.status_code)
+            response = response.json()
+            self.assertEqual(uid, response.get("uid"))

@@ -1,6 +1,7 @@
 import os
 import random
 import re
+import uuid
 from datetime import datetime
 from sqlite3 import IntegrityError
 from typing import List, Optional
@@ -99,6 +100,11 @@ async def add_movies(new_movies: List[Movie], current_user: User = Depends(get_c
     if not isinstance(new_movies, list):
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     try:
+        for movie in new_movies:
+            if not movie.uid: movie.uid = str(uuid.uuid4())
+            if not movie.created_at:
+                movie.created_at = datetime.utcnow()
+                movie.modified_at = datetime.utcnow()
         await DB_ENGINE.save_all(new_movies)
     except:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -124,6 +130,7 @@ async def update_movie(movie_id, updated_movie: Movie, current_user: User = Depe
     movie_obj.genre = updated_movie.genre
     movie_obj.director = updated_movie.director
     movie_obj.popularity = updated_movie.popularity
+    movie_obj.modified_at = datetime.utcnow()
     await DB_ENGINE.save(movie_obj)
     return movie_id
 
@@ -257,6 +264,11 @@ async def add_genres(new_genres: List[Genre], current_user: User = Depends(get_c
     if not isinstance(new_genres, list):
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     try:
+        for genre in new_genres:
+            if not genre.uid: genre.uid = str(uuid.uuid4())
+            if not genre.created_at:
+                genre.created_at = datetime.utcnow()
+                genre.modified_at = datetime.utcnow()
         await DB_ENGINE.save_all(new_genres)
     except:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -277,7 +289,8 @@ async def update_genre(genre_id, updated_genre: Genre, current_user: User = Depe
         genre_obj = await DB_ENGINE.find_one(Genre, Genre.uid == genre_id)
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find genre with ID - {genre_id}")
-    genre_obj.name=updated_genre.name
+    genre_obj.name = updated_genre.name
+    genre_obj.modified_at = datetime.utcnow()
     await DB_ENGINE.save(genre_obj)
     return genre_obj.uid
 
@@ -343,6 +356,12 @@ async def add_directors(new_directors: List[Director], current_user: User = Depe
     if not isinstance(new_directors, list):
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     try:
+        for director in new_directors:
+            if not director.uid: director.uid = str(uuid.uuid4())
+            if not director.created_at:
+                director.created_at = datetime.utcnow()
+                director.modified_at = datetime.utcnow()
+
         await DB_ENGINE.save_all(new_directors)
     except:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -364,6 +383,7 @@ async def update_genre(director_id, updated_director: Director, current_user: Us
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot find genre with ID - {director_id}")
     director_obj.name = updated_director.name
+    director_obj.modified_at = datetime.utcnow()
     await DB_ENGINE.save(director_obj)
     return director_obj.uid
 

@@ -25,8 +25,6 @@ class MoviesTestCases(unittest.TestCase):
         cls.access_token = json.loads(response.text).get("access_token")
 
     def tearDown(self) -> None:
-        # response = self.client.request(method="delete", url="/register", json=self.new_user)
-        # self.assertEqual(200, response.status_code)
         pass
 
     def test_add_movies(self):
@@ -45,7 +43,7 @@ class MoviesTestCases(unittest.TestCase):
         response = self.client.request(method="post", url="/movies", headers={"access_token": self.access_token}, json=new_movies)
         self.assertEqual(200, response.status_code)
         response = response.json()
-        self.added_movies_objs = response
+        return response
 
     def test_list_all_movies(self):
         expected_response = {
@@ -109,27 +107,30 @@ class MoviesTestCases(unittest.TestCase):
             self.assertIn(keyword, response.get("data")[0].get("name"))
 
     def test_edit_movie_by_id(self):
-        if len(self.added_movies_objs) > 0:
-            movie_id = self.added_movies_objs[0].get("uid")
-            updated_movie = {
-                "popularity": 83.0,
-                "director": "John Wick",
-                "genre": [
-                  "Adventure",
-                  " Family",
-                  " Fantasy",
-                  " Musical"
-                ],
-                "imdb_score": 8.3,
-                "name": "The Wizard of Oz"
-            }
-            response = self.client.request(method="put", url=f"/movies/{movie_id}", headers={"access_token": self.access_token},
-                                           json=updated_movie)
-            self.assertEqual(200, response.status_code)
+        list_of_added_movies = self.test_add_movies()
+        movie_id = list_of_added_movies[0].get("uid")
+        updated_movie = {
+            "popularity": 83.0,
+            "director": "test edit John Wick",
+            "genre": [
+              "Adventure",
+              " Family",
+              " Fantasy",
+              " Musical"
+            ],
+            "imdb_score": 8.3,
+            "name": "The Wizard of Oz"
+        }
+        response = self.client.request(method="put", url=f"/movies/{movie_id}", headers={"access_token": self.access_token},
+                                       json=updated_movie)
+        self.assertEqual(200, response.status_code)
+        response = response.json()
+        self.assertEqual(movie_id, response)
 
     def test_delete_movie_by_id(self):
-        if len(self.added_movies_objs) > 0:
-            movie_id = self.added_movies_objs[0].get("uid")
+        list_of_added_movies = self.test_add_movies()
+        for added_genre in list_of_added_movies:
+            movie_id = added_genre.get("uid")
             response = self.client.request(method="delete", url=f"/movies/{movie_id}",
                                            headers={"access_token": self.access_token})
             self.assertEqual(200, response.status_code)

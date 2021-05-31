@@ -23,8 +23,6 @@ class GenresTestCases(unittest.TestCase):
         cls.access_token = response.json().get("access_token")
 
     def tearDown(self) -> None:
-        # response = self.client.request(method="delete", url="/register", json=self.new_user)
-        # self.assertEqual(200, response.status_code)
         pass
 
     def test_add_genres(self):
@@ -34,8 +32,7 @@ class GenresTestCases(unittest.TestCase):
         response = self.client.request(method="post", url="/genres", headers={"access_token": self.access_token},
                                        json=new_genres)
         self.assertEqual(200, response.status_code)
-        response = response.json()
-        self.added_genres_objs = response
+        return response.json()
 
     def test_list_all_genres(self):
         expected_response = {
@@ -97,19 +94,21 @@ class GenresTestCases(unittest.TestCase):
         if len(response.get("data")) > 0:
             self.assertIn(keyword, response.get("data")[0].get("name"))
 
-    def test_edit_movie_by_id(self):
-        # if len(self.added_genres_objs) > 0:
-        genre_id = self.added_genres_objs[0].get("uid")
+    def test_edit_genre_by_id(self):
+        list_of_added_genres = self.test_add_genres()
+        genre_id = list_of_added_genres[0].get("uid")
         updated_genre = {
             "name": "New Genre 1 Edited"
         }
         response = self.client.request(method="put", url=f"/genres/{genre_id}", headers={"access_token": self.access_token},
                                        json=updated_genre)
         self.assertEqual(200, response.status_code)
+        response = response.json()
+        self.assertEqual(genre_id, response)
 
-    def test_delete_movie_by_id(self):
-        # if len(self.added_genres_objs) > 0:
-        genre_id = self.added_genres_objs[0].get("uid")
-        response = self.client.request(method="delete", url=f"/genres/{genre_id}",
-                                       headers={"access_token": self.access_token})
-        self.assertEqual(200, response.status_code)
+    def test_delete_genre_by_id(self):
+        list_of_added_genres = self.test_add_genres()
+        for added_genre in list_of_added_genres:
+            genre_id = added_genre.get("uid")
+            response = self.client.request(method="delete", url=f"/genres/{genre_id}")
+            self.assertEqual(200, response.status_code)
